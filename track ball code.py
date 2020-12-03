@@ -1,3 +1,10 @@
+#This py detects ball and returns distance. 
+#In addition, it sends value of 
+#1) boolean whether or not detected target ball 
+#2) distance (meter) 
+#3) rotational velocity (0-1 is magnitude) , (0,1, and 2 determines direction) 
+#to roborio through analog output.
+#====================================
 # import the necessary packages
 from collections import deque
 from imutils.video import VideoStream
