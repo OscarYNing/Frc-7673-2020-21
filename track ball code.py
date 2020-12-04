@@ -116,7 +116,7 @@ def display_content(distance,radius,x,RS):
 # tb = 1 means ball on left side
 # tb = 2 means ball on right side
 
-def send_vals(rotation, distance):
+def send_vals(rotation, distance,tb):
     
     tbA.ChangeDutyCycle(tb)
     tbdA.ChangeDutyCycle(distance)
@@ -175,14 +175,14 @@ while True:
             # + str(int(y)) + ", radius: " + str(int(radius)))
             
             
-            #tbr,tbd,tb sent to roborio
             tbr = determine_direction(x)
             tbd = distance_radius_converter(radius)
             if(tbr<0):
                 tb = 1
             else:
                 tb = 2
-            send_vals(tbr,tbd)
+    #tbr,tbd,tb sent to roborio         
+    send_vals(tbr,tbd,tb)
             
     # update the points queue
     pts.appendleft(center)
@@ -195,8 +195,8 @@ while True:
         # otherwise, compute the thickness of the line and
         # draw the connecting lines
         
-    # show the frame to our sc
-    #cv2.imshow("track ball", frame)
+    # show the frame to our screen
+    cv2.imshow("track ball", frame)
     key = cv2.waitKey(1) & 0xFF
     # if the escape key is pressed, stop the loop
     if key == 27:
