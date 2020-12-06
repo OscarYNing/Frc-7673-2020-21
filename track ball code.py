@@ -27,6 +27,8 @@ def connectionListener(connected, info):
         notified[0] = True
         cond.notify()
 
+#format ex: team num is 1234 -> server = "10.12.34.2"
+
 NetworkTables.initialize(server='10.76.73.2')
 NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
 
@@ -42,11 +44,12 @@ table = NetworkTables.getTable('SmartDashboard')
 
 my_lcd = lcd()
 
-text = 'Ball detected!'
-global tb
+text = 'Ball detected'
 tb = 0
+tbr = 0
+tbd = 0
 
-# construct the argument parse and parse the arguments
+# construct the arguments parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",
     help="path to the (optional) video file")
@@ -77,10 +80,12 @@ def distance_radius_converter(rad):
     b = -0.9431246065
     distance = a* math.pow(rad,b)
     return distance
+
 #this function determines the ball's direction(based on middle)
 #and automatially adjust robot(provide rotation value)
 # r = 0.984
 # r^2 = 96%
+
 def determine_direction(x):
     standrad_x = 340
     error = x - standrad_x
@@ -88,11 +93,14 @@ def determine_direction(x):
     b = 0.0364120782
     
     rotational_speed = a*error + b
-    #when ball is exactly in middle
-    if(x == standrad_x):
+
+    #when ball is roughly in middle
+
+    if(rotational_speed <= 0.15 and rotational_speed >= -0.15):
         rotational_speed = 0
         
     return rotational_speed
+
 #function that display nesscary
 #identites on the screen when a ball is detected
 
@@ -153,9 +161,8 @@ while True:
         cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     center = None
-    tb = 0
     # only proceed if at least one contour was found
-    if len(cnts) > 1:
+    if len(cnts) > 2:
         # find the largest contour in the mask, then use
         # it to compute the minimum enclosing circle and
         # centroid
@@ -181,6 +188,9 @@ while True:
             tbr = determine_direction(x)
             tbd = distance_radius_converter(radius)
             tb = 1
+    else: 
+        tb = 0
+
     #tbr,tbd,tb sent to roborio         
     send_vals(tbr,tbd,tb)
             
