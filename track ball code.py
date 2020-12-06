@@ -14,6 +14,31 @@ import imutils
 import time
 import math
 from lcd_display import lcd
+import threading
+from networktables import NetworkTables
+
+# making connection to robot
+cond = threading.Condition()
+notified = [False]
+
+def connectionListener(connected, info):
+    print(info, '; Connected=%s' % connected)
+    with cond:
+        notified[0] = True
+        cond.notify()
+
+NetworkTables.initialize(server='10.76.73.2')
+NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
+
+with cond:
+    print("Waiting")
+    if not notified[0]:
+        cond.wait()
+
+# Insert your processing code here
+print("Connected!")
+
+table = NetworkTables.getTable('SmartDashboard')
 
 my_lcd = lcd()
 
@@ -94,10 +119,11 @@ def display_content(distance,radius,x,RS):
 # this function outputs data to robot through networktable
 # tb = 0 means no ball
 # tb = 1 means there's a target ball
-
 def send_vals(rotation, distance,tb):
     
-    
+    table.putNumber("tb", tb)
+    table.putNumber("tbr", rotation)
+    table.putNumber("tbd", distance)
 
 # keep looping
 while True:
@@ -154,10 +180,7 @@ while True:
             
             tbr = determine_direction(x)
             tbd = distance_radius_converter(radius)
-            if(tbr<0):
-                tb = 1
-            else:
-                tb = 2
+            tb = 1
     #tbr,tbd,tb sent to roborio         
     send_vals(tbr,tbd,tb)
             
