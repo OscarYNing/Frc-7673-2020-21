@@ -27,8 +27,7 @@ def connectionListener(connected, info):
         cond.notify()
 
 #format ex: team num is 1234 -> server = "10.12.34.2"
-
-NetworkTables.initialize(server='192.168.0.142')
+NetworkTables.initialize(server='10.76.73.2')
 NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
 
 with cond:
@@ -66,7 +65,7 @@ pts = deque(maxlen=args["buffer"])
 # if a video path was not supplied, grab the reference
 # to the webcam
 if not args.get("video", False):
-    vs = VideoStream(src=0).start()
+    vs = VideoStream(src=1).start()
 
 # allow the camera or video file to warm up
 time.sleep(2.0)
@@ -87,11 +86,13 @@ def determine_direction(x):
     error = x - standrad_x
     a = 0.001333
     b = 0.273
-    
-    rotational_speed = a*error + b
-
+    if(error < 0):
+        rotational_speed = -(a*abs(error) + b)
+    else:
+        rotational_speed = a*error + b
+        
     #when ball is roughly in middle
-
+    print(str(rotational_speed))
     if(rotational_speed <= 0.35 and rotational_speed >= -0.35):
         rotational_speed = 0
         
