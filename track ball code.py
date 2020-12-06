@@ -3,7 +3,7 @@
 #1) boolean whether or not detected target ball 
 #2) distance (meter) 
 #3) rotational velocity (0-1 is magnitude) , (0,1, and 2 determines direction) 
-#to roborio through analog output.
+#to roborio through networktable.
 #====================================
 # import the necessary packages
 from collections import deque
@@ -14,32 +14,12 @@ import imutils
 import time
 import math
 from lcd_display import lcd
-import RPi.GPIO as GPIO
-
-GPIO.setmode(GPIO.BCM)
-
-# GPIO 25 is boolean output
-# GPIO 8 is ball distance output
-# GPIO 7 is rotational velocity output
-
-GPIO.setup(25, GPIO.OUT)
-GPIO.setup(8, GPIO.OUT)
-GPIO.setup(7, GPIO.OUT)
-
-tbA = GPIO.PWM(25, 1000)
-tbdA = GPIO.PWM(8, 1000)
-tbrA = GPIO.PWM(7, 1000)
-
-tbA.start(0)
-tbdA.start(0)
-tbrA.start(0) 
 
 my_lcd = lcd()
 
 text = 'Ball detected!'
 global tb
 tb = 0
-#display = Blynk(auth_token, pin = "V0")
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -111,16 +91,13 @@ def display_content(distance,radius,x,RS):
     my_lcd.display_string("D:" + str(distance)+ "m,R:" + str(radius), 1)
     my_lcd.display_string("x:" + str(x) + ",RS:" + str(RS)  , 2)
 
-# this function outputs analog signal to robot
+# this function outputs data to robot through networktable
 # tb = 0 means no ball
-# tb = 1 means ball on left side
-# tb = 2 means ball on right side
+# tb = 1 means there's a target ball
 
 def send_vals(rotation, distance,tb):
     
-    tbA.ChangeDutyCycle(tb)
-    tbdA.ChangeDutyCycle(distance)
-    tbrA.ChangeDutyCycle(abs(rotation))
+    
 
 # keep looping
 while True:
