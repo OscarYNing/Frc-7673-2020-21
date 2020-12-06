@@ -13,7 +13,6 @@ import cv2
 import imutils
 import time
 import math
-from lcd_display import lcd
 import threading
 from networktables import NetworkTables
 
@@ -29,7 +28,7 @@ def connectionListener(connected, info):
 
 #format ex: team num is 1234 -> server = "10.12.34.2"
 
-NetworkTables.initialize(server='10.76.73.2')
+NetworkTables.initialize(server='192.168.0.142')
 NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
 
 with cond:
@@ -42,8 +41,7 @@ print("Connected!")
 
 table = NetworkTables.getTable('SmartDashboard')
 
-my_lcd = lcd()
-
+#variables setup
 text = 'Ball detected'
 tb = 0
 tbr = 0
@@ -83,20 +81,18 @@ def distance_radius_converter(rad):
 
 #this function determines the ball's direction(based on middle)
 #and automatially adjust robot(provide rotation value)
-# r = 0.984
-# r^2 = 96%
 
 def determine_direction(x):
     standrad_x = 340
     error = x - standrad_x
-    a = 0.001905329
-    b = 0.0364120782
+    a = 0.001333
+    b = 0.273
     
     rotational_speed = a*error + b
 
     #when ball is roughly in middle
 
-    if(rotational_speed <= 0.15 and rotational_speed >= -0.15):
+    if(rotational_speed <= 0.35 and rotational_speed >= -0.35):
         rotational_speed = 0
         
     return rotational_speed
@@ -105,24 +101,9 @@ def determine_direction(x):
 #identites on the screen when a ball is detected
 
 def draw_references(x,y,radius):
-    cv2.circle(frame, (x, y), radius,
+    cv2.circle(frame, (x, y), int(radius),
                 (0, 0, 0), 3)
-    cv2.putText(frame, text, (x + radius, y-43), cv2.FONT_HERSHEY_TRIPLEX,
-  0.8, (255, 41, 30), 1, cv2.LINE_AA)
-    cv2.putText(frame, "x: " + str(x) + ", y: " + str(y), (x + radius, y-24), cv2.FONT_HERSHEY_TRIPLEX,
-  0.8, (255, 41, 30), 1, cv2.LINE_AA)
-    cv2.putText(frame, " radius = " + str(radius), (x + radius, y-5), cv2.FONT_HERSHEY_TRIPLEX,
-  0.8, (255, 41, 30), 1, cv2.LINE_AA)
     cv2.circle(frame, center, 5, (255, 0, 255), -1)
-
-# display radius, rotational velocity, x val, and distance on lcd
-
-def display_content(distance,radius,x,RS):
-    distance = int(distance *100) / 100
-    radius = int(radius*100)/100
-    RS = int(RS*100)/100
-    my_lcd.display_string("D:" + str(distance)+ "m,R:" + str(radius), 1)
-    my_lcd.display_string("x:" + str(x) + ",RS:" + str(RS)  , 2)
 
 # this function outputs data to robot through networktable
 # tb = 0 means no ball
@@ -162,7 +143,7 @@ while True:
     cnts = imutils.grab_contours(cnts)
     center = None
     # only proceed if at least one contour was found
-    if len(cnts) > 2:
+    if len(cnts) > 4:
         # find the largest contour in the mask, then use
         # it to compute the minimum enclosing circle and
         # centroid
@@ -179,11 +160,8 @@ while True:
             
             #draw_references(x,y,int(radius))
             #print("distance = " + str(distance_radius_converter(radius)) + "  m")
-            display_content(distance_radius_converter(radius),radius,x,determine_direction(x))
-            #print("(x,y): (" + str(x) + ", " + str(y) +")")
-            #print("x: " + str(int(x)) + ", y: "
-            # + str(int(y)) + ", radius: " + str(int(radius)))
-            
+            print("(x,y): (" + str(x) + ", " + str(y) +")")
+            draw_references(x,y,radius)
             
             tbr = determine_direction(x)
             tbd = distance_radius_converter(radius)
