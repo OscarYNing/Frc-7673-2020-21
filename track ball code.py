@@ -144,7 +144,7 @@ while True:
     cnts = imutils.grab_contours(cnts)
     center = None
     # only proceed if at least one contour was found
-    if len(cnts) > 4:
+    if len(cnts) > 10:
         # find the largest contour in the mask, then use
         # it to compute the minimum enclosing circle and
         # centroid
