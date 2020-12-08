@@ -2,7 +2,7 @@
 #In addition, it sends value of 
 #1) boolean whether or not detected target ball 
 #2) distance (meter) 
-#3) rotational velocity (0-1 is magnitude) , (0,1, and 2 determines direction) 
+#3) rotational velocity
 #to roborio through networktable.
 #====================================
 # import the necessary packages
