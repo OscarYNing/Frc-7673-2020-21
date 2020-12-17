@@ -56,8 +56,8 @@ args = vars(ap.parse_args())
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
 # list of tracked points
-Lower = (15, 115, 115)
-Upper = (40, 255, 255)
+Lower = (26,125,80)
+Upper = (36, 255, 255)
 # yellow: (15, 115, 115)/(40, 255, 255)
 #orange: (10, 100, 20)/ (25, 255, 255)
 #red: (10,255,255)/(180,255,255)
@@ -92,7 +92,6 @@ def determine_direction(x):
         rotational_speed = a*error + b
         
     #when ball is roughly in middle
-    print(str(rotational_speed))
     if(rotational_speed <= 0.35 and rotational_speed >= -0.35):
         rotational_speed = 0
         
