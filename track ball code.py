@@ -56,7 +56,7 @@ args = vars(ap.parse_args())
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
 # list of tracked points
-Lower = (26,125,80)
+Lower = (13,78,88)
 Upper = (36, 255, 255)
 # yellow: (15, 115, 115)/(40, 255, 255)
 #orange: (10, 100, 20)/ (25, 255, 255)
